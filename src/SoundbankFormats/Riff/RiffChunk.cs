@@ -109,22 +109,23 @@ namespace jnm2.SoundbankFormats.Riff
                 }
 
                 if (chunk.lengthLeft < 8) throw new InvalidDataException("Not enough room left for another chunk.");
-                var chunkName = new string(chunk.reader.ReadChars(4));
-                var chunkLength = chunk.reader.ReadUInt32();
+                var subchunkName = new string(chunk.reader.ReadChars(4));
+                var subchunkLength = chunk.reader.ReadUInt32();
                 chunk.lengthLeft -= 8;
 
-                if (chunk.lengthLeft < chunkLength) throw new InvalidDataException("Not enough room left for the subchunk.");
-                chunk.lengthLeft -= chunkLength;
+                var physicalSubchunkLength = ((subchunkLength + 1) >> 1) << 1; // Round up to nearest 16 bits
+                if (chunk.lengthLeft < physicalSubchunkLength) throw new InvalidDataException("Not enough room left for the subchunk.");
+                chunk.lengthLeft -= physicalSubchunkLength;
 
-                var isList = chunkName == "LIST";
+                var isList = subchunkName == "LIST";
                 if (isList)
                 {
-                    if (chunkLength < 4) throw new InvalidDataException("Not enough room in the subchunk for the list name.");
-                    chunkName = new string(chunk.reader.ReadChars(4));
-                    chunkLength -= 4;
+                    if (subchunkLength < 4) throw new InvalidDataException("Not enough room in the subchunk for the list name.");
+                    subchunkName = new string(chunk.reader.ReadChars(4));
+                    subchunkLength -= 4;
                 }
 
-                chunk.currentSubchunk = new RiffChunk(chunkName, isList, chunkLength, chunk.reader);
+                chunk.currentSubchunk = new RiffChunk(subchunkName, isList, subchunkLength, chunk.reader);
                 return true;
             }
 
