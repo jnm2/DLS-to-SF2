@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="BinaryReaderExtensions.cs" />
     <Compile Include="Dls\DlsCollection.cs" />
+    <Compile Include="Dls\DlsInfo.cs" />
     <Compile Include="Dls\DlsInstrument.cs" />
     <Compile Include="Dls\DlsReader.cs" />
     <Compile Include="Dls\DlsRegion.cs" />

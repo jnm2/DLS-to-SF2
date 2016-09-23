@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace jnm2.SoundbankFormats.Riff
 {
@@ -56,6 +57,32 @@ namespace jnm2.SoundbankFormats.Riff
             TakeLength(4);
             return reader.ReadUInt32();
         }
+
+        public string ReadNullTerminatedString()
+        {
+            if (IsList) throw new InvalidOperationException($"Cannot {nameof(ReadNullTerminatedString)} on list chunks. Check {nameof(IsList)} before calling.");
+
+            var sb = new StringBuilder();
+
+            while (true)
+            {
+                if (lengthLeft == 0) throw new InvalidDataException("Unterminated string.");
+                lengthLeft--;
+
+                var c = reader.Read();
+                switch (c)
+                {
+                    case -1:
+                        throw new InvalidDataException("Unterminated string and unexpected end of chunk.");
+                    case 0:
+                        return sb.ToString();
+                }
+
+                sb.Append((char)c);
+            }
+        }
+
+
 
         public IEnumerable<RiffChunk> ReadList()
         {

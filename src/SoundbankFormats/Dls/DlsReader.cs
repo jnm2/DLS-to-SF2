@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using jnm2.SoundbankFormats.Riff;
@@ -12,6 +13,7 @@ namespace jnm2.SoundbankFormats.Dls
             using (var reader = new RiffReader(stream))
             {
                 var instruments = new List<DlsInstrument>();
+                var info = new DlsInfo();
 
                 foreach (var dlsSubchunk in reader.ReadRiff("DLS ").ReadList())
                     switch (dlsSubchunk.Name)
@@ -24,9 +26,12 @@ namespace jnm2.SoundbankFormats.Dls
                                 where instrument != null
                                 select instrument.Value);
                             break;
+                        case "INFO":
+                            info = ReadDlsInfo(dlsSubchunk);
+                            break;
                     }
 
-                return new DlsCollection(instruments);
+                return new DlsCollection(info, instruments);
             }
         }
 
@@ -90,6 +95,105 @@ namespace jnm2.SoundbankFormats.Dls
 
             if (!isHeaderSet) return null;
             return new DlsRegion(rangeKeyLow, rangeKeyHigh, rangeVelocityLow, rangeVelocityHigh, selfNonExclusive, keyGroup);
+        }
+
+
+
+        private static DlsInfo ReadDlsInfo(RiffChunk infoChunk)
+        {
+            var archivalLocation = (string)null;
+            var artist = (string)null;
+            var commissioned = (string)null;
+            var comments = (string)null;
+            var copyright = (string)null;
+            var creationDate = (DateTime?)null;
+            var engineer = (string)null;
+            var genre = (string)null;
+            var keywords = (string)null;
+            var medium = (string)null;
+            var name = (string)null;
+            var product = (string)null;
+            var subject = (string)null;
+            var software = (string)null;
+            var source = (string)null;
+            var sourceForm = (string)null;
+            var technician = (string)null;
+
+            foreach (var infoSubchunk in infoChunk.ReadList())
+                switch (infoSubchunk.Name)
+                {
+                    case "IARL":
+                        archivalLocation = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "IART":
+                        artist = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "ICMS":
+                        commissioned = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "ICMT":
+                        comments = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "ICOP":
+                        copyright = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "ICRD":
+                        DateTime value;
+                        if (DateTime.TryParse(infoSubchunk.ReadNullTerminatedString(), out value)) creationDate = value;
+                        break;
+                    case "IENG":
+                        engineer = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "IGNR":
+                        genre = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "IKEY":
+                        keywords = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "IMED":
+                        medium = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "INAM":
+                        name = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "IPRD":
+                        product = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "ISBJ":
+                        subject = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "ISFT":
+                        software = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "ISRC":
+                        source = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "ISRF":
+                        sourceForm = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                    case "ITCH":
+                        technician = infoSubchunk.ReadNullTerminatedString();
+                        break;
+                }
+
+            return new DlsInfo(
+                archivalLocation,
+                artist,
+                commissioned,
+                comments,
+                copyright,
+                creationDate,
+                engineer,
+                genre,
+                keywords,
+                medium,
+                name,
+                product,
+                subject,
+                software,
+                source,
+                sourceForm,
+                technician);
         }
     }
 }
