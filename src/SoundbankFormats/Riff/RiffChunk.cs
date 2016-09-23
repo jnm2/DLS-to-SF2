@@ -67,9 +67,10 @@ namespace jnm2.SoundbankFormats.Riff
         {
             currentSubchunk?.Skip();
 
-            if (lengthLeft == 0) return;
-            reader.Skip(lengthLeft + (Length & 1)); // Round total length up to nearest 16-bit word; i.e. if it's odd, skip one extra.
-            lengthLeft = 0;
+            var lengthToSkip = lengthLeft + (Length & 1); // Round total length up to nearest 16-bit word; i.e. if it's odd, skip one extra.
+            if (lengthToSkip == 0) return;
+            reader.Skip(lengthToSkip);
+            lengthLeft -= lengthToSkip;
         }
 
         private sealed class SubchunkEnumerable : IEnumerable<RiffChunk>
