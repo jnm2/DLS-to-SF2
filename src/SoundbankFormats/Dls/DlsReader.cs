@@ -12,6 +12,7 @@ namespace jnm2.SoundbankFormats.Dls
         {
             using (var reader = new RiffReader(stream))
             {
+                var collectionVersion = default(Version);
                 var instruments = new List<DlsInstrument>();
                 var wavePool = new List<DlsWaveFile>();
                 var info = new DlsInfo();
@@ -19,6 +20,13 @@ namespace jnm2.SoundbankFormats.Dls
                 foreach (var dlsSubchunk in reader.ReadRiff("DLS ").ReadList())
                     switch (dlsSubchunk.Name)
                     {
+                        case "vers":
+                            var minor = dlsSubchunk.ReadUInt16();
+                            var major = dlsSubchunk.ReadUInt16();
+                            var revision = dlsSubchunk.ReadUInt16();
+                            var build = dlsSubchunk.ReadUInt16();
+                            collectionVersion = new Version(major, minor, build, revision);
+                            break;
                         case "lins":
                             instruments.AddRange(
                                 from lrgnSubchunk in dlsSubchunk.ReadList()
@@ -40,7 +48,7 @@ namespace jnm2.SoundbankFormats.Dls
                             break;
                     }
 
-                return new DlsCollection(info, instruments, wavePool);
+                return new DlsCollection(collectionVersion, info, instruments, wavePool);
             }
         }
 
