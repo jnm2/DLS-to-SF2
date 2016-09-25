@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace jnm2.SoundbankFormats.Riff
@@ -43,24 +44,28 @@ namespace jnm2.SoundbankFormats.Riff
             lengthLeft -= length;
         }
 
+        private void CheckInvalidOperationIfList([CallerMemberName] string callerName = null)
+        {
+            if (IsList) throw new InvalidOperationException($"Cannot {callerName} on list chunks. Check {nameof(IsList)} before calling.");
+        }
 
         public ushort ReadUInt16()
         {
-            if (IsList) throw new InvalidOperationException($"Cannot {nameof(ReadUInt16)} on list chunks. Check {nameof(IsList)} before calling.");
+            CheckInvalidOperationIfList();
             TakeLength(2);
             return reader.ReadUInt16();
         }
 
         public uint ReadUInt32()
         {
-            if (IsList) throw new InvalidOperationException($"Cannot {nameof(ReadUInt32)} on list chunks. Check {nameof(IsList)} before calling.");
+            CheckInvalidOperationIfList();
             TakeLength(4);
             return reader.ReadUInt32();
         }
 
         public string ReadNullTerminatedString()
         {
-            if (IsList) throw new InvalidOperationException($"Cannot {nameof(ReadNullTerminatedString)} on list chunks. Check {nameof(IsList)} before calling.");
+            CheckInvalidOperationIfList();
 
             var sb = new StringBuilder();
 
@@ -80,6 +85,14 @@ namespace jnm2.SoundbankFormats.Riff
 
                 sb.Append((char)c);
             }
+        }
+
+        public byte[] ReadAllBytes()
+        {
+            CheckInvalidOperationIfList();
+            var r = reader.ReadBytes(checked((int)lengthLeft));
+            lengthLeft = 0;
+            return r;
         }
 
 

@@ -13,6 +13,7 @@ namespace jnm2.SoundbankFormats.Dls
             using (var reader = new RiffReader(stream))
             {
                 var instruments = new List<DlsInstrument>();
+                var wavePool = new List<DlsWaveFile>();
                 var info = new DlsInfo();
 
                 foreach (var dlsSubchunk in reader.ReadRiff("DLS ").ReadList())
@@ -26,12 +27,20 @@ namespace jnm2.SoundbankFormats.Dls
                                 where instrument != null
                                 select instrument.Value);
                             break;
+                        case "wvpl":
+                            wavePool.AddRange(
+                                from wvplSubchunk in dlsSubchunk.ReadList()
+                                where wvplSubchunk.Name == "wave"
+                                let waveFile = ReadDlsWaveFile(wvplSubchunk)
+                                where waveFile != null
+                                select waveFile.Value);
+                            break;
                         case "INFO":
                             info = ReadDlsInfo(dlsSubchunk);
                             break;
                     }
 
-                return new DlsCollection(info, instruments);
+                return new DlsCollection(info, instruments, wavePool);
             }
         }
 
@@ -95,6 +104,41 @@ namespace jnm2.SoundbankFormats.Dls
 
             if (!isHeaderSet) return null;
             return new DlsRegion(rangeKeyLow, rangeKeyHigh, rangeVelocityLow, rangeVelocityHigh, selfNonExclusive, keyGroup);
+        }
+
+
+
+        private static DlsWaveFile? ReadDlsWaveFile(RiffChunk waveChunk)
+        {
+            var format = default(DlsWaveFormat);
+            var numChannels = default(ushort);
+            var samplesPerSecond = default(uint);
+            var avgBytesPerSec = default(uint);
+            var blockAlign = default(ushort);
+            var bitsPerSample = default(ushort?);
+            var data = default(byte[]);
+            var info = new DlsInfo();
+
+            foreach (var waveSubchunk in waveChunk.ReadList())
+                switch (waveSubchunk.Name)
+                {
+                    case "fmt ":
+                        format = (DlsWaveFormat)waveSubchunk.ReadUInt16();
+                        numChannels = waveSubchunk.ReadUInt16();
+                        samplesPerSecond = waveSubchunk.ReadUInt32();
+                        avgBytesPerSec = waveSubchunk.ReadUInt32();
+                        blockAlign = waveSubchunk.ReadUInt16();
+                        if (format == DlsWaveFormat.PCM) bitsPerSample = waveSubchunk.ReadUInt16();
+                        break;
+                    case "data":
+                        data = waveSubchunk.ReadAllBytes();
+                        break;
+                    case "INFO":
+                        info = ReadDlsInfo(waveSubchunk);
+                        break;
+                }
+
+            return new DlsWaveFile(format, numChannels, samplesPerSecond, avgBytesPerSec, blockAlign, bitsPerSample, data, info);
         }
 
 

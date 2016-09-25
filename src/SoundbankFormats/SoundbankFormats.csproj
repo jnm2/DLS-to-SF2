@@ -45,6 +45,8 @@
     <Compile Include="Dls\DlsInstrument.cs" />
     <Compile Include="Dls\DlsReader.cs" />
     <Compile Include="Dls\DlsRegion.cs" />
+    <Compile Include="Dls\DlsWaveFormat.cs" />
+    <Compile Include="Dls\DlsWavePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Riff\RiffChunk.cs" />
     <Compile Include="Riff\RiffReader.cs" />
