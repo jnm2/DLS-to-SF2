@@ -59,6 +59,7 @@ namespace jnm2.SoundbankFormats.Dls
             var isPercussion = false;
 
             var regions = new List<DlsRegion>();
+            var info = new DlsInfo();
 
             foreach (var insSubchunk in insChunk.ReadList())
                 switch (insSubchunk.Name)
@@ -80,10 +81,13 @@ namespace jnm2.SoundbankFormats.Dls
                             where region != null
                             select region.Value);
                         break;
+                    case "INFO":
+                        info = ReadDlsInfo(insSubchunk);
+                        break;
                 }
 
             if (!isHeaderSet) return null;
-            return new DlsInstrument(msb, lsb, patch, isPercussion, regions);
+            return new DlsInstrument(info, msb, lsb, patch, isPercussion, regions);
         }
 
         private static DlsRegion? ReadDlsRegion(RiffChunk rgnChunk)

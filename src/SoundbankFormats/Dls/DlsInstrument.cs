@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace jnm2.SoundbankFormats.Dls
 {
+    [DebuggerDisplay("{ToString(),nq}")]
     public struct DlsInstrument
     {
-        public DlsInstrument(byte bankMsb, byte bankLsb, byte patch, bool isPercussion, IReadOnlyList<DlsRegion> ranges)
+        public DlsInstrument(DlsInfo info, byte bankMsb, byte bankLsb, byte patch, bool isPercussion, IReadOnlyList<DlsRegion> ranges)
         {
+            Info = info;
             BankMsb = bankMsb;
             BankLsb = bankLsb;
             Patch = patch;
@@ -13,11 +16,14 @@ namespace jnm2.SoundbankFormats.Dls
             Ranges = ranges;
         }
 
+        public DlsInfo Info { get; set; }
         public byte BankMsb { get; }
         public byte BankLsb { get; }
         public byte Patch { get; }
         public bool IsPercussion { get; }
 
         public IReadOnlyList<DlsRegion> Ranges { get; }
+
+        public override string ToString() => Info.Name;
     }
 }
