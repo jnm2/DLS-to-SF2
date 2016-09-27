@@ -49,11 +49,32 @@ namespace jnm2.SoundbankFormats.Riff
             if (IsList) throw new InvalidOperationException($"Cannot {callerName} on list chunks. Check {nameof(IsList)} before calling.");
         }
 
+        public void Skip(uint numBytes)
+        {
+            CheckInvalidOperationIfList();
+            TakeLength(numBytes);
+            reader.Skip(numBytes);
+        }
+
+        public short ReadInt16()
+        {
+            CheckInvalidOperationIfList();
+            TakeLength(2);
+            return reader.ReadInt16();
+        }
+
         public ushort ReadUInt16()
         {
             CheckInvalidOperationIfList();
             TakeLength(2);
             return reader.ReadUInt16();
+        }
+
+        public int ReadInt32()
+        {
+            CheckInvalidOperationIfList();
+            TakeLength(4);
+            return reader.ReadInt32();
         }
 
         public uint ReadUInt32()

@@ -8,8 +8,9 @@
         public ushort RangeVelocityHigh { get; }
         public ushort RangeVelocityLow { get; }
         public bool SelfNonExclusive { get; }
+        public DlsWaveSample? WaveSample { get; }
 
-        public DlsRegion(ushort rangeKeyLow, ushort rangeKeyHigh, ushort rangeVelocityLow, ushort rangeVelocityHigh, bool selfNonExclusive, ushort keyGroup)
+        public DlsRegion(ushort rangeKeyLow, ushort rangeKeyHigh, ushort rangeVelocityLow, ushort rangeVelocityHigh, bool selfNonExclusive, ushort keyGroup, DlsWaveSample? waveSample)
         {
             RangeKeyLow = rangeKeyLow;
             RangeKeyHigh = rangeKeyHigh;
@@ -17,6 +18,7 @@
             RangeVelocityHigh = rangeVelocityHigh;
             SelfNonExclusive = selfNonExclusive;
             KeyGroup = keyGroup;
+            WaveSample = waveSample;
         }
     }
 }

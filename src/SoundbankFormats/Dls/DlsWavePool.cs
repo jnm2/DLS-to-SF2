@@ -12,9 +12,10 @@ namespace jnm2.SoundbankFormats.Dls
         public ushort NumChannels { get; }
         public uint SamplesPerSecond { get; }
         public byte[] Data { get; }
+        public DlsWaveSample? WaveSample { get; }
         public DlsInfo Info { get; set; }
 
-        public DlsWaveFile(DlsWaveFormat format, ushort numChannels, uint samplesPerSecond, uint avgBytesPerSec, ushort blockAlign, ushort? bitsPerSample, byte[] data, DlsInfo info)
+        public DlsWaveFile(DlsWaveFormat format, ushort numChannels, uint samplesPerSecond, uint avgBytesPerSec, ushort blockAlign, ushort? bitsPerSample, byte[] data, DlsWaveSample? waveSample, DlsInfo info)
         {
             Format = format;
             NumChannels = numChannels;
@@ -23,6 +24,7 @@ namespace jnm2.SoundbankFormats.Dls
             BlockAlign = blockAlign;
             BitsPerSample = bitsPerSample;
             Data = data;
+            WaveSample = waveSample;
             Info = info;
         }
 

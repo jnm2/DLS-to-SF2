@@ -93,12 +93,13 @@ namespace jnm2.SoundbankFormats.Dls
         private static DlsRegion? ReadDlsRegion(RiffChunk rgnChunk)
         {
             var isHeaderSet = false;
-            ushort rangeKeyLow = 0;
-            ushort rangeKeyHigh = 0;
-            ushort rangeVelocityLow = 0;
-            ushort rangeVelocityHigh = 0;
+            var rangeKeyLow = default(ushort);
+            var rangeKeyHigh = default(ushort);
+            var rangeVelocityLow = default(ushort);
+            var rangeVelocityHigh = default(ushort);
             var selfNonExclusive = false;
-            ushort keyGroup = 0;
+            var keyGroup = default(ushort);
+            var waveSample = default(DlsWaveSample?);
 
             foreach (var rgnSubchunk in rgnChunk.ReadList())
                 switch (rgnSubchunk.Name)
@@ -112,12 +113,14 @@ namespace jnm2.SoundbankFormats.Dls
                         selfNonExclusive = rgnSubchunk.ReadUInt16() == 1;
                         keyGroup = rgnSubchunk.ReadUInt16();
                         break;
+                    case "wsmp":
+                        waveSample = ReadDlsWaveSample(rgnSubchunk);
+                        break;
                 }
 
             if (!isHeaderSet) return null;
-            return new DlsRegion(rangeKeyLow, rangeKeyHigh, rangeVelocityLow, rangeVelocityHigh, selfNonExclusive, keyGroup);
+            return new DlsRegion(rangeKeyLow, rangeKeyHigh, rangeVelocityLow, rangeVelocityHigh, selfNonExclusive, keyGroup, waveSample);
         }
-
 
 
         private static DlsWaveFile? ReadDlsWaveFile(RiffChunk waveChunk)
@@ -130,6 +133,7 @@ namespace jnm2.SoundbankFormats.Dls
             var bitsPerSample = default(ushort?);
             var data = default(byte[]);
             var info = new DlsInfo();
+            var waveSample = default(DlsWaveSample?);
 
             foreach (var waveSubchunk in waveChunk.ReadList())
                 switch (waveSubchunk.Name)
@@ -148,9 +152,41 @@ namespace jnm2.SoundbankFormats.Dls
                     case "INFO":
                         info = ReadDlsInfo(waveSubchunk);
                         break;
+                    case "wsmp":
+                        waveSample = ReadDlsWaveSample(waveSubchunk);
+                        break;
                 }
 
-            return new DlsWaveFile(format, numChannels, samplesPerSecond, avgBytesPerSec, blockAlign, bitsPerSample, data, info);
+            return new DlsWaveFile(format, numChannels, samplesPerSecond, avgBytesPerSec, blockAlign, bitsPerSample, data, waveSample, info);
+        }
+
+
+        private static DlsWaveSample? ReadDlsWaveSample(RiffChunk waveSampleChunk)
+        {
+            if (waveSampleChunk.ReadUInt32() != 20) return null;
+
+            var unityNote = waveSampleChunk.ReadUInt16();
+            var fineTune = waveSampleChunk.ReadInt16();
+            var attenuation = waveSampleChunk.ReadInt32();
+            var options = (DlsWaveSampleOptions)waveSampleChunk.ReadUInt32();
+
+            var loops = new List<WaveSampleLoop>(1);
+            for (var numLoops = waveSampleChunk.ReadUInt32(); numLoops != 0; numLoops--)
+            {
+                var size = waveSampleChunk.ReadUInt32();
+                if (size != 16)
+                {
+                    waveSampleChunk.Skip(size - 4);
+                    continue;
+                }
+
+                loops.Add(new WaveSampleLoop(
+                    type: (WaveSampleLoopType)waveSampleChunk.ReadUInt32(),
+                    start: waveSampleChunk.ReadUInt32(),
+                    length: waveSampleChunk.ReadUInt32()));
+            }
+
+            return new DlsWaveSample(unityNote, fineTune, attenuation, options, loops);
         }
 
 
