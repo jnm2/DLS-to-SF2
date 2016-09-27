@@ -1,6 +1,6 @@
 ﻿namespace jnm2.SoundbankFormats.Dls
 {
-    public enum WaveSampleLoopType : uint
+    public enum DlsWaveSampleLoopType : uint
     {
         Forward = 0
     }

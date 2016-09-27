@@ -187,7 +187,7 @@ namespace jnm2.SoundbankFormats.Dls
             var attenuation = waveSampleChunk.ReadInt32();
             var options = (DlsWaveSampleOptions)waveSampleChunk.ReadUInt32();
 
-            var loops = new List<WaveSampleLoop>(1);
+            var loops = new List<DlsWaveSampleLoop>(1);
             for (var numLoops = waveSampleChunk.ReadUInt32(); numLoops != 0; numLoops--)
             {
                 var size = waveSampleChunk.ReadUInt32();
@@ -197,8 +197,8 @@ namespace jnm2.SoundbankFormats.Dls
                     continue;
                 }
 
-                loops.Add(new WaveSampleLoop(
-                    type: (WaveSampleLoopType)waveSampleChunk.ReadUInt32(),
+                loops.Add(new DlsWaveSampleLoop(
+                    type: (DlsWaveSampleLoopType)waveSampleChunk.ReadUInt32(),
                     start: waveSampleChunk.ReadUInt32(),
                     length: waveSampleChunk.ReadUInt32()));
             }

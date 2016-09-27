@@ -49,8 +49,8 @@
     <Compile Include="Dls\DlsWavePool.cs" />
     <Compile Include="Dls\DlsWaveSample.cs" />
     <Compile Include="Dls\DlsWaveSampleOptions.cs" />
-    <Compile Include="Dls\WaveSampleLoop.cs" />
-    <Compile Include="Dls\WaveSampleLoopType.cs" />
+    <Compile Include="Dls\DlsWaveSampleLoop.cs" />
+    <Compile Include="Dls\DlsWaveSampleLoopType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Riff\RiffChunk.cs" />
     <Compile Include="Riff\RiffReader.cs" />

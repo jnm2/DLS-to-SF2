@@ -8,9 +8,9 @@ namespace jnm2.SoundbankFormats.Dls
         public short FineTune { get; }
         public int Attenuation { get; }
         public DlsWaveSampleOptions Options { get; }
-        public IReadOnlyList<WaveSampleLoop> Loops { get; }
+        public IReadOnlyList<DlsWaveSampleLoop> Loops { get; }
 
-        public DlsWaveSample(ushort unityNote, short fineTune, int attenuation, DlsWaveSampleOptions options, IReadOnlyList<WaveSampleLoop> loops)
+        public DlsWaveSample(ushort unityNote, short fineTune, int attenuation, DlsWaveSampleOptions options, IReadOnlyList<DlsWaveSampleLoop> loops)
         {
             UnityNote = unityNote;
             FineTune = fineTune;

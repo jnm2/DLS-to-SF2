@@ -1,12 +1,12 @@
 ﻿namespace jnm2.SoundbankFormats.Dls
 {
-    public struct WaveSampleLoop
+    public struct DlsWaveSampleLoop
     {
         public uint Start { get; }
         public uint Length { get; }
-        public WaveSampleLoopType Type { get; }
+        public DlsWaveSampleLoopType Type { get; }
 
-        public WaveSampleLoop(WaveSampleLoopType type, uint start, uint length)
+        public DlsWaveSampleLoop(DlsWaveSampleLoopType type, uint start, uint length)
         {
             Type = type;
             Start = start;
