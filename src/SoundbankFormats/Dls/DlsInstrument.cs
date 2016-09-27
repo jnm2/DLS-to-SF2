@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace jnm2.SoundbankFormats.Dls
@@ -6,8 +7,9 @@ namespace jnm2.SoundbankFormats.Dls
     [DebuggerDisplay("{ToString(),nq}")]
     public struct DlsInstrument
     {
-        public DlsInstrument(DlsInfo info, byte bankMsb, byte bankLsb, byte patch, bool isPercussion, IReadOnlyList<DlsRegion> ranges)
+        public DlsInstrument(Guid? id, DlsInfo info, byte bankMsb, byte bankLsb, byte patch, bool isPercussion, IReadOnlyList<DlsRegion> ranges)
         {
+            Id = id;
             Info = info;
             BankMsb = bankMsb;
             BankLsb = bankLsb;
@@ -16,6 +18,7 @@ namespace jnm2.SoundbankFormats.Dls
             Ranges = ranges;
         }
 
+        public Guid? Id { get; }
         public DlsInfo Info { get; set; }
         public byte BankMsb { get; }
         public byte BankLsb { get; }

@@ -108,6 +108,14 @@ namespace jnm2.SoundbankFormats.Riff
             }
         }
 
+        public byte[] ReadBytes(int numBytes)
+        {
+            if (numBytes < 0) throw new ArgumentOutOfRangeException(nameof(numBytes), numBytes, "Number of bytes must not be negative.");
+            CheckInvalidOperationIfList();
+            TakeLength((uint)numBytes);
+            return reader.ReadBytes(numBytes);
+        }
+
         public byte[] ReadAllBytes()
         {
             CheckInvalidOperationIfList();

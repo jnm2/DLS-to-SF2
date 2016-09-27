@@ -16,6 +16,7 @@ namespace jnm2.SoundbankFormats.Dls
                 var instruments = new List<DlsInstrument>();
                 var wavePool = new List<DlsWaveFile>();
                 var info = new DlsInfo();
+                var id = default(Guid?);
 
                 foreach (var dlsSubchunk in reader.ReadRiff("DLS ").ReadList())
                     switch (dlsSubchunk.Name)
@@ -26,6 +27,9 @@ namespace jnm2.SoundbankFormats.Dls
                             var revision = dlsSubchunk.ReadUInt16();
                             var build = dlsSubchunk.ReadUInt16();
                             collectionVersion = new Version(major, minor, build, revision);
+                            break;
+                        case "dlid":
+                            id = ReadDlsId(dlsSubchunk);
                             break;
                         case "lins":
                             instruments.AddRange(
@@ -48,8 +52,17 @@ namespace jnm2.SoundbankFormats.Dls
                             break;
                     }
 
-                return new DlsCollection(collectionVersion, info, instruments, wavePool);
+                return new DlsCollection(id, collectionVersion, info, instruments, wavePool);
             }
+        }
+
+        private static Guid? ReadDlsId(RiffChunk dlsSubchunk)
+        {
+            return new Guid(
+                dlsSubchunk.ReadInt32(),
+                dlsSubchunk.ReadInt16(),
+                dlsSubchunk.ReadInt16(),
+                dlsSubchunk.ReadBytes(8));
         }
 
         private static DlsInstrument? ReadDlsInstrument(RiffChunk insChunk)
@@ -59,11 +72,15 @@ namespace jnm2.SoundbankFormats.Dls
             var isPercussion = false;
 
             var regions = new List<DlsRegion>();
+            var id = default(Guid?);
             var info = new DlsInfo();
 
             foreach (var insSubchunk in insChunk.ReadList())
                 switch (insSubchunk.Name)
                 {
+                    case "dlid":
+                        id = ReadDlsId(insSubchunk);
+                        break;
                     case "insh":
                         isHeaderSet = true;
                         insSubchunk.ReadUInt32(); // NumRegions
@@ -87,7 +104,7 @@ namespace jnm2.SoundbankFormats.Dls
                 }
 
             if (!isHeaderSet) return null;
-            return new DlsInstrument(info, msb, lsb, patch, isPercussion, regions);
+            return new DlsInstrument(id, info, msb, lsb, patch, isPercussion, regions);
         }
 
         private static DlsRegion? ReadDlsRegion(RiffChunk rgnChunk)
