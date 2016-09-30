@@ -117,6 +117,7 @@ namespace jnm2.SoundbankFormats.Dls
             var selfNonExclusive = false;
             var keyGroup = default(ushort);
             var waveSample = default(DlsWaveSample?);
+            var waveLink = default(DlsWaveLink);
 
             foreach (var rgnSubchunk in rgnChunk.ReadList())
                 switch (rgnSubchunk.Name)
@@ -133,10 +134,17 @@ namespace jnm2.SoundbankFormats.Dls
                     case "wsmp":
                         waveSample = ReadDlsWaveSample(rgnSubchunk);
                         break;
+                    case "wlnk":
+                        waveLink = new DlsWaveLink(
+                            options: (DlsWaveLinkOptions)rgnSubchunk.ReadUInt16(),
+                            phaseGroup: rgnSubchunk.ReadUInt16(),
+                            channels: rgnSubchunk.ReadUInt32(),
+                            tableIndex: rgnSubchunk.ReadUInt32());
+                        break;
                 }
 
             if (!isHeaderSet) return null;
-            return new DlsRegion(rangeKeyLow, rangeKeyHigh, rangeVelocityLow, rangeVelocityHigh, selfNonExclusive, keyGroup, waveSample);
+            return new DlsRegion(rangeKeyLow, rangeKeyHigh, rangeVelocityLow, rangeVelocityHigh, selfNonExclusive, keyGroup, waveSample, waveLink);
         }
 
 

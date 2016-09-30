@@ -2,23 +2,25 @@
 {
     public struct DlsRegion
     {
-        public ushort KeyGroup { get; }
         public ushort RangeKeyHigh { get; }
         public ushort RangeKeyLow { get; }
         public ushort RangeVelocityHigh { get; }
         public ushort RangeVelocityLow { get; }
         public bool SelfNonExclusive { get; }
+        public ushort KeyGroup { get; }
         public DlsWaveSample? WaveSample { get; }
+        public DlsWaveLink WaveLink { get; }
 
-        public DlsRegion(ushort rangeKeyLow, ushort rangeKeyHigh, ushort rangeVelocityLow, ushort rangeVelocityHigh, bool selfNonExclusive, ushort keyGroup, DlsWaveSample? waveSample)
+        public DlsRegion(ushort rangeKeyHigh, ushort rangeKeyLow, ushort rangeVelocityHigh, ushort rangeVelocityLow, bool selfNonExclusive, ushort keyGroup, DlsWaveSample? waveSample, DlsWaveLink waveLink)
         {
-            RangeKeyLow = rangeKeyLow;
             RangeKeyHigh = rangeKeyHigh;
-            RangeVelocityLow = rangeVelocityLow;
+            RangeKeyLow = rangeKeyLow;
             RangeVelocityHigh = rangeVelocityHigh;
+            RangeVelocityLow = rangeVelocityLow;
             SelfNonExclusive = selfNonExclusive;
             KeyGroup = keyGroup;
             WaveSample = waveSample;
+            WaveLink = waveLink;
         }
     }
 }

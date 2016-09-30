@@ -46,6 +46,8 @@
     <Compile Include="Dls\DlsReader.cs" />
     <Compile Include="Dls\DlsRegion.cs" />
     <Compile Include="Dls\DlsWaveFormat.cs" />
+    <Compile Include="Dls\DlsWaveLink.cs" />
+    <Compile Include="Dls\DlsWaveLinkOptions.cs" />
     <Compile Include="Dls\DlsWavePool.cs" />
     <Compile Include="Dls\DlsWaveSample.cs" />
     <Compile Include="Dls\DlsWaveSampleOptions.cs" />
