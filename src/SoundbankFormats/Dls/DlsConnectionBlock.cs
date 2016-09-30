@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 
 namespace jnm2.SoundbankFormats.Dls
 {
@@ -20,6 +21,21 @@ namespace jnm2.SoundbankFormats.Dls
             Scale = scale;
         }
 
-        public override string ToString() => $"{Source} ({Control}) -> {Destination}";
+        public override string ToString()
+        {
+            var r = new StringBuilder();
+
+            if (Source != DlsConnectionBlockSource.None)
+            {
+                r.Append(Source).Append(" × ");
+
+                if (Control != DlsConnectionBlockSource.None)
+                    r.Append(Control).Append(" × ");
+            }
+
+            r.Append(Scale).Append(" → ").Append(Destination);
+            if (Transform != DlsConnectionBlockTransform.None) r.Append(" (").Append(Transform).Append(')');
+            return r.ToString();
+        }
     }
 }
