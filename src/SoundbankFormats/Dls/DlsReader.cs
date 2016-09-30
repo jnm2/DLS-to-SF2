@@ -74,6 +74,7 @@ namespace jnm2.SoundbankFormats.Dls
             var regions = new List<DlsRegion>();
             var id = default(Guid?);
             var info = new DlsInfo();
+            var articulatorList = (IReadOnlyList<DlsArticulator>)new DlsArticulator[0];
 
             foreach (var insSubchunk in insChunk.ReadList())
                 switch (insSubchunk.Name)
@@ -98,13 +99,16 @@ namespace jnm2.SoundbankFormats.Dls
                             where region != null
                             select region.Value);
                         break;
+                    case "lart":
+                        articulatorList = ReadDlsArticulatorList(insSubchunk);
+                        break;
                     case "INFO":
                         info = ReadDlsInfo(insSubchunk);
                         break;
                 }
 
             if (!isHeaderSet) return null;
-            return new DlsInstrument(id, info, msb, lsb, patch, isPercussion, regions);
+            return new DlsInstrument(id, info, msb, lsb, patch, isPercussion, regions, articulatorList);
         }
 
         private static DlsRegion? ReadDlsRegion(RiffChunk rgnChunk)
@@ -118,6 +122,7 @@ namespace jnm2.SoundbankFormats.Dls
             var keyGroup = default(ushort);
             var waveSample = default(DlsWaveSample?);
             var waveLink = default(DlsWaveLink);
+            var articulatorList = (IReadOnlyList<DlsArticulator>)new DlsArticulator[0];
 
             foreach (var rgnSubchunk in rgnChunk.ReadList())
                 switch (rgnSubchunk.Name)
@@ -141,10 +146,13 @@ namespace jnm2.SoundbankFormats.Dls
                             channels: rgnSubchunk.ReadUInt32(),
                             tableIndex: rgnSubchunk.ReadUInt32());
                         break;
+                    case "lart":
+                        articulatorList = ReadDlsArticulatorList(rgnSubchunk);
+                        break;
                 }
 
             if (!isHeaderSet) return null;
-            return new DlsRegion(rangeKeyLow, rangeKeyHigh, rangeVelocityLow, rangeVelocityHigh, selfNonExclusive, keyGroup, waveSample, waveLink);
+            return new DlsRegion(rangeKeyLow, rangeKeyHigh, rangeVelocityLow, rangeVelocityHigh, selfNonExclusive, keyGroup, waveSample, waveLink, articulatorList);
         }
 
 
@@ -213,7 +221,31 @@ namespace jnm2.SoundbankFormats.Dls
 
             return new DlsWaveSample(unityNote, fineTune, attenuation, options, loops);
         }
+    
 
+        private static IReadOnlyList<DlsArticulator> ReadDlsArticulatorList(RiffChunk articulatorListChunk)
+        {
+            var r = new List<DlsArticulator>();
+
+            foreach (var articulatorListSubchunk in articulatorListChunk.ReadList())
+            {
+                if (articulatorListSubchunk.Name != "art1") continue;
+                if (articulatorListSubchunk.ReadUInt32() != 8) continue;
+
+                var connectionBlocks = new DlsConnectionBlock[articulatorListSubchunk.ReadUInt32()];
+                for (var i = 0; i < connectionBlocks.Length; i++)
+                    connectionBlocks[i] = new DlsConnectionBlock(
+                        source: (DlsConnectionBlockSource)articulatorListSubchunk.ReadUInt16(),
+                        control: (DlsConnectionBlockSource)articulatorListSubchunk.ReadUInt16(),
+                        destination: (DlsConnectionBlockDestination)articulatorListSubchunk.ReadUInt16(),
+                        transform: (DlsConnectionBlockTransform)articulatorListSubchunk.ReadUInt16(),
+                        scale: articulatorListSubchunk.ReadInt32());
+
+                r.Add(new DlsArticulator(connectionBlocks));
+            }
+
+            return r;
+        }
 
 
         private static DlsInfo ReadDlsInfo(RiffChunk infoChunk)

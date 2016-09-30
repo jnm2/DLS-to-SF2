@@ -1,4 +1,6 @@
-﻿namespace jnm2.SoundbankFormats.Dls
+﻿using System.Collections.Generic;
+
+namespace jnm2.SoundbankFormats.Dls
 {
     public struct DlsRegion
     {
@@ -10,8 +12,9 @@
         public ushort KeyGroup { get; }
         public DlsWaveSample? WaveSample { get; }
         public DlsWaveLink WaveLink { get; }
+        public IReadOnlyList<DlsArticulator> ArticulatorList { get; set; }
 
-        public DlsRegion(ushort rangeKeyHigh, ushort rangeKeyLow, ushort rangeVelocityHigh, ushort rangeVelocityLow, bool selfNonExclusive, ushort keyGroup, DlsWaveSample? waveSample, DlsWaveLink waveLink)
+        public DlsRegion(ushort rangeKeyHigh, ushort rangeKeyLow, ushort rangeVelocityHigh, ushort rangeVelocityLow, bool selfNonExclusive, ushort keyGroup, DlsWaveSample? waveSample, DlsWaveLink waveLink, IReadOnlyList<DlsArticulator> articulatorList)
         {
             RangeKeyHigh = rangeKeyHigh;
             RangeKeyLow = rangeKeyLow;
@@ -21,6 +24,7 @@
             KeyGroup = keyGroup;
             WaveSample = waveSample;
             WaveLink = waveLink;
+            ArticulatorList = articulatorList;
         }
     }
 }

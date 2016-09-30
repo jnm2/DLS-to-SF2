@@ -40,7 +40,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryReaderExtensions.cs" />
+    <Compile Include="Dls\DlsArticulator.cs" />
     <Compile Include="Dls\DlsCollection.cs" />
+    <Compile Include="Dls\DlsConnectionBlock.cs" />
+    <Compile Include="Dls\DlsConnectionBlockDestination.cs" />
+    <Compile Include="Dls\DlsConnectionBlockSource.cs" />
+    <Compile Include="Dls\DlsConnectionBlockTransform.cs" />
     <Compile Include="Dls\DlsInfo.cs" />
     <Compile Include="Dls\DlsInstrument.cs" />
     <Compile Include="Dls\DlsReader.cs" />

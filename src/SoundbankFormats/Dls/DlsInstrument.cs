@@ -7,7 +7,7 @@ namespace jnm2.SoundbankFormats.Dls
     [DebuggerDisplay("{ToString(),nq}")]
     public struct DlsInstrument
     {
-        public DlsInstrument(Guid? id, DlsInfo info, byte bankMsb, byte bankLsb, byte patch, bool isPercussion, IReadOnlyList<DlsRegion> regions)
+        public DlsInstrument(Guid? id, DlsInfo info, byte bankMsb, byte bankLsb, byte patch, bool isPercussion, IReadOnlyList<DlsRegion> regions, IReadOnlyList<DlsArticulator> articulatorList)
         {
             Id = id;
             Info = info;
@@ -16,6 +16,7 @@ namespace jnm2.SoundbankFormats.Dls
             Patch = patch;
             IsPercussion = isPercussion;
             Regions = regions;
+            ArticulatorList = articulatorList;
         }
 
         public Guid? Id { get; }
@@ -26,6 +27,7 @@ namespace jnm2.SoundbankFormats.Dls
         public bool IsPercussion { get; }
 
         public IReadOnlyList<DlsRegion> Regions { get; }
+        public IReadOnlyList<DlsArticulator> ArticulatorList { get; set; }
 
         public override string ToString() => Info.Name;
     }
